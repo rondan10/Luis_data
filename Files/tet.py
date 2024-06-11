@@ -1,69 +1,67 @@
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
-from sklearn.linear_model import LogisticRegression
 
-def hacer_prediccion():
-    cadena = [widget.get() for widget in widgets_list]
-    prediction = lregression.predict([cadena])
-    if prediction == 1:
-        resultado_label.config(text="Predicción: Dropout", foreground="#FF5733")
-    else:
-        resultado_label.config(text="Predicción: Graduate o Enrolled", foreground="#33FF5C")
-
-# Crear la ventana principal
+# Crea la ventana principal
 root = tk.Tk()
-root.title("Predicción de Deserción Estudiantil")
-root.configure(background="#1EAE98")  # Color de fondo
+root.title("Predicción de Egresos")
+root.configure(background="#1EAE98")
 
-# Crear un frame para el formulario
-form_frame = ttk.Frame(root, padding=(20, 10))
-form_frame.pack()
-
-# Crear los widgets del formulario dinámicamente
-widgets_data = [
-    {'widget': ttk.Label, 'description': 'Estado Civil:'},
-    {'widget': ttk.Label, 'description': 'Calificación Prevía:'},
-    {'widget': ttk.Label, 'description': 'Nota de Calificación Prevía:'},
-    {'widget': ttk.Label, 'description': 'Ocupación de la Madre:'},
-    {'widget': ttk.Label, 'description': 'Ocupación del Padre:'},
-    {'widget': ttk.Label, 'description': 'Nota de Admisión:'},
-    {'widget': ttk.Label, 'description': '¿Desplazado?:'},
-    {'widget': ttk.Label, 'description': '¿Necesidad de Educación Especial?:'},
-    {'widget': ttk.Label, 'description': 'Género:'},
-    {'widget': ttk.Label, 'description': '¿Beneficiario de Beca?:'},
-    {'widget': ttk.Label, 'description': 'Edad al Matricularse:'},
-    {'widget': ttk.Label, 'description': 'UC 1º Semestre Acreditadas:'},
-    {'widget': ttk.Label, 'description': 'UC 1º Semestre Inscritas:'},
-    {'widget': ttk.Label, 'description': 'UC 1º Semestre Evaluaciones:'},
-    {'widget': ttk.Label, 'description': 'UC 1º Semestre Aprobadas:'},
-    {'widget': ttk.Label, 'description': 'UC 1º Semestre Nota:'},
-    {'widget': ttk.Label, 'description': 'UC 1º Semestre Sin Evaluaciones:'},
-    {'widget': ttk.Label, 'description': 'UC 2º Semestre Acreditadas:'},
-    {'widget': ttk.Label, 'description': 'UC 2º Semestre Inscritas:'},
-    {'widget': ttk.Label, 'description': 'UC 2º Semestre Evaluaciones:'},
-    {'widget': ttk.Label, 'description': 'UC 2º Semestre Aprobadas:'},
-    {'widget': ttk.Label, 'description': 'UC 2º Semestre Nota:'},
-    {'widget': ttk.Label, 'description': 'UC 2º Semestre Sin Evaluaciones:'},
+# Define los campos del formulario
+fields = [
+    "Estado Civil:",
+    "Calificación Prevía:",
+    "Nota de Calificación Prevía:",
+    "Ocupación de la Madre:",
+    "Ocupación del Padre:",
+    "Nota de Admisión:",
+    "¿Desplazado?:",
+    "¿Necesidad de Educación Especial?:",
+    "Género:",
+    "¿Beneficiario de Beca?:",
+    "Edad al Matricularse:",
+    "UC 1º Semestre Acreditadas:",
+    "UC 1º Semestre Inscritas:",
+    "UC 1º Semestre Evaluaciones:",
+    "UC 1º Semestre Aprobadas:",
+    "UC 1º Semestre Nota:",
+    "UC 1º Semestre Sin Evaluaciones:",
+    "UC 2º Semestre Acreditadas:",
+    "UC 2º Semestre Inscritas:",
+    "UC 2º Semestre Evaluaciones:",
+    "UC 2º Semestre Aprobadas:",
+    "UC 2º Semestre Nota:",
+    "UC 2º Semestre Sin Evaluaciones:"
 ]
 
-widgets_list = []
-for i, widget_data in enumerate(widgets_data):
-    label = widget_data['widget'](form_frame, text=widget_data['description'], font=('Helvetica', 10, 'bold'), background="#1EAE98", foreground="white")  # Colores de texto y fondo
-    label.grid(row=i, column=0, sticky="W", padx=5, pady=5)
-    widget = ttk.Entry(form_frame)
-    widget.grid(row=i, column=1, sticky="EW", padx=5, pady=5)
-    widgets_list.append(widget)
+# Función para hacer la predicción
+def hacer_prediccion():
+    try:
+        cadena = [float(entry.get()) for entry in entry_fields]
+        # Aquí va tu lógica de predicción
+        prediction = lregression.predict([cadena])
+        if prediction == 1:
+            messagebox.showinfo("Predicción", "Predicción: Dropout")
+        else:
+            messagebox.showinfo("Predicción", "Predicción: Graduate o Enrolled")
+    except ValueError:
+        messagebox.showerror("Error", "Por favor, ingresa valores numéricos en todos los campos.")
 
-# Botón para realizar la predicción
-predict_button = ttk.Button(root, text="Realizar Predicción", command=hacer_prediccion)
-predict_button.pack(pady=10)
+# Crea los campos de entrada del formulario
+entry_fields = []
+max_label_width = max(len(field) for field in fields)  # Calcula el ancho máximo de las etiquetas
+for field in fields:
+    row = ttk.Frame(root)
+    row.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
+    label = ttk.Label(row, width=max_label_width + 1, text=field, anchor='w', background="#1EAE98", foreground="white")  # Ajusta el ancho de la etiqueta
+    entry = ttk.Entry(row)
+    entry.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
+    label.pack(side=tk.LEFT)
+    entry_fields.append(entry)
 
-# Etiqueta para mostrar el resultado de la predicción
-resultado_label = ttk.Label(root, text="", font=('Helvetica', 12, 'bold'), background="#1EAE98")  # Color de fondo
-resultado_label.pack(pady=10)
+# Crea el botón para realizar la predicción
+submit_button = ttk.Button(root, text="Predecir", command=hacer_prediccion)
+submit_button.pack(side=tk.TOP, padx=5, pady=5)
 
-# Modelo de regresión logística (sustituye con tu modelo entrenado)
-lregression = LogisticRegression()
-
-# Ejecutar la aplicación
+# Inicia el bucle principal de la ventana
 root.mainloop()
